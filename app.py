@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-HF_TOKEN = os.getenv("HF_TOKEN")
+HF_TOKEN =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
 
 client = OpenAI(
     base_url="https://router.huggingface.co/v1",
