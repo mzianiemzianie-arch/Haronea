@@ -1,0 +1,35 @@
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from openai import OpenAI
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+HF_TOKEN = os.getenv("HF_TOKEN")
+
+client = OpenAI(
+    base_url="https://router.huggingface.co/v1",
+    api_key=HF_TOKEN
+)
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    msg = data.get("message", "")
+    try:
+        completion = client.chat.completions.create(
+            model="moonshotai/Kimi-K2-Instruct-0905",
+            messages=[{"role": "user", "content": msg}]
+        )
+        reply = completion.choices[0].message.content
+        return jsonify({"response": reply})
+    except Exception as e:
+        return jsonify({"response": f"خطأ: {str(e)}"})
+
+@app.route("/")
+def index():
+    return send_from_directory('.', 'index.html')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
